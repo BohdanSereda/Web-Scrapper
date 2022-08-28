@@ -1,18 +1,18 @@
 import { CheerioAPI, Element, load } from "cheerio";
-import {PageScraperHelper} from './page.scraper.helper'
+import { PageScraperHelper } from './page.scraper.helper'
 
 export class InformationScraperHelper {
     $: CheerioAPI;
-    constructor($: CheerioAPI){
+    constructor($: CheerioAPI) {
         this.$ = $
     }
     scrapeLinks = (): string[] => {
-        const links: string[] =[]
+        const links: string[] = []
         this.$('a.css-1m051bw')
-        .filter((i, el: Element) => /^\/biz\//.test(this.$(el).attr('href')))
-        .each((i, el: Element) =>{
-            links.push(this.$(el).attr('href'))
-        })
+            .filter((i, el: Element) => /^\/biz\//.test(this.$(el).attr('href')))
+            .each((i, el: Element) => {
+                links.push(this.$(el).attr('href'))
+            })
         return links
     }
 
@@ -26,9 +26,9 @@ export class InformationScraperHelper {
 
     scrapeImages = (): string[] => {
         const images: string[] = []
-        this.$('.carousel__09f24__HJrqN').find('div').each((i, el: Element)=>{
+        this.$('.carousel__09f24__HJrqN').find('div').each((i, el: Element) => {
             const img = this.$(el).find('img').attr('src')
-            if(img && !images.includes(img)){
+            if (img && !images.includes(img)) {
                 images.push(img)
             }
         })
@@ -37,22 +37,22 @@ export class InformationScraperHelper {
 
     scrapeWorkingHours = (): string[] => {
         const workingHours: string[] = []
-        this.$('table').find('tr').each((i, el: Element)=>{
+        this.$('table').find('tr').each((i, el: Element) => {
             const day = this.$(el).find('p').text().replace(/(.{3})/, '$1 ')
-            if(day){
+            if (day) {
                 workingHours.push(day)
-            }   
+            }
         })
         return workingHours
     }
-    
+
     scrapeAmenities = (): string[] => {
-       return this.$('.arrange__09f24__LDfbs').find('span.css-1p9ibgf').text().split(' ')
+        return this.$('.arrange__09f24__LDfbs').find('span.css-1p9ibgf').text().split(' ')
     }
 
     scrapeAddress = (): string => {
         const addressData: string[] = []
-        this.$('address').find('p').each((i, el: Element) =>{ 
+        this.$('address').find('p').each((i, el: Element) => {
             addressData.push(this.$(el).text().trim())
         })
         return addressData.join(', ');
@@ -67,16 +67,16 @@ export class InformationScraperHelper {
     }
 
     scrapePhone = (): string => {
-        let phone: string = '' 
+        let phone: string = ''
         this.$('p.css-1p9ibgf')
             .filter((i, el: Element) => /[1-9]{1}[0-9]{3,14}$/.test(this.$(el).text()))
-            .each((i, el: Element) =>{
-               phone = phone.concat(this.$(el).text().trim())
-        })
+            .each((i, el: Element) => {
+                phone = phone.concat(this.$(el).text().trim())
+            })
         return phone
     }
 
-    scrapeLowestRatedReview = (): string =>{
+    scrapeLowestRatedReview = (): string => {
         return this.$('.comment__09f24__gu0rG').find('span').first().text()
     }
 

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { CheerioAPI, load } from 'cheerio';
-import { InformationScraperHelper } from './helpers/information.scraper.helper';
-import { PageScraperHelper } from './helpers/page.scraper.helper'
+import { GetBusinessDto } from './dto/get-business.dto';
+import { InformationScraperHelper } from './helpers/information-scraper.helper';
+import { PageScraperHelper } from './helpers/page-scraper.helper'
 
 @Injectable()
 export class ScraperService {
@@ -40,7 +41,7 @@ export class ScraperService {
         }
     }
 
-    async scrapeBusinessData(city: string) {
+    async scrapeBusinessData(city: string): Promise<GetBusinessDto[]> {
         let businessesLinks = []
         const pageScraperHelper = new PageScraperHelper()
 

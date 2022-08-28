@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+
 import { CheerioAPI, load } from 'cheerio';
-import { ScraperHelper } from './helpers/scraper.helper';
+import { InformationScraperHelper } from './helpers/information.scraper.helper';
+import {PageScraperHelper} from './helpers/page.scraper.helper'
 
 @Injectable()
 export class ScraperService {
-     scrapePage = async (url: string): Promise<string> => {
-        try {
-            let { data } = await axios.get(url);
-            return data
-        } catch (error) {
-            console.error(error.message)
-        }
-    }
+
     getBusinessLinks(pageHtml: string): string[] {
         const $ = load(pageHtml);
-        const scrapeHelper = new ScraperHelper($)
-        return scrapeHelper.scrapeLinks()
+        const informationScraperHelper = new InformationScraperHelper($)
+        return informationScraperHelper.scrapeLinks()
     }
-    extractBusinessPageInformation(businessPageHtml: string){
+    extractBusinessPageInformation = async(businessPageHtml: string, businessLink: string) => {
         const $: CheerioAPI = load(businessPageHtml);
-        const scrapeHelper = new ScraperHelper($)
+        const informationScraperHelper = new InformationScraperHelper($)
 
-        const name: string= scrapeHelper.scrapeName();
-        const description: string= scrapeHelper.scrapeDescription();
-        const images: string[]= scrapeHelper.scrapeImages()
-        const amenities: string[]= scrapeHelper.scrapeAmenities()
-        const workingHours: string[] = scrapeHelper.scrapeWorkingHours()
-        const address: string = scrapeHelper.scrapeAddress()
-        const phone: string = scrapeHelper.scrapePhone()
-
-        const lowest_rated_review = $('.comment__09f24__gu0rG').find('span').first().text()
-
-        const rating: number = scrapeHelper.scrapeRating()
-
+        const name: string= informationScraperHelper.scrapeName();
+        const description: string= informationScraperHelper.scrapeDescription();
+        const images: string[]= informationScraperHelper.scrapeImages()
+        const amenities: string[]= informationScraperHelper.scrapeAmenities()
+        const workingHours: string[] = informationScraperHelper.scrapeWorkingHours()
+        const address: string = informationScraperHelper.scrapeAddress()
+        const phone: string = informationScraperHelper.scrapePhone()
+        const rating: number = informationScraperHelper.scrapeRating()
+        const lowest_rated_review: string = informationScraperHelper.scrapeLowestRatedReview()
+        const highest_rated_review: string = await informationScraperHelper.scrapeHighestRatedReview(businessLink)
         return {
             name,
             description,
@@ -42,25 +34,27 @@ export class ScraperService {
             phone,
             rating,
             lowest_rated_review,
+            highest_rated_review,
             amenities,
             workingHours
         }
     }
-    timer = (ms: number) => new Promise(r => setTimeout(r, ms))
+
     async scrapeBusinessData(city: string) {
         let businessesLinks = []
+        const pageScraperHelper = new PageScraperHelper()
 
-        for (let i = 0; i < 10; i += 10) {
-            console.log(i);
+        for (let i = 0; i < 50; i += 10) {
             const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc='+ city + '&start=' + i
-            const businessListPageHtml = await this.scrapePage(link)
+            const businessListPageHtml = await pageScraperHelper.scrapePage(link)
             businessesLinks = businessesLinks.concat(this.getBusinessLinks(businessListPageHtml))
         }
         const businessesData = []
         for (const businessesLink of businessesLinks) {
-            const businessPageHtml = await this.scrapePage('https://www.yelp.com' + businessesLink + '?sort_by=rating_desc')
-            await this.timer(500)
-            businessesData.push(this.extractBusinessPageInformation(businessPageHtml))
+            const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
+            const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)      
+            await pageScraperHelper.timer(500)
+            businessesData.push(await this.extractBusinessPageInformation(businessPageHtml, businessLink))
         }
         return businessesData
     }

@@ -1,5 +1,5 @@
 import { CheerioAPI, Element, load } from "cheerio";
-import { PageScraperHelper } from './page.scraper.helper'
+import { PageScraperHelper } from './page-scraper.helper'
 
 export class InformationScraperHelper {
     $: CheerioAPI;

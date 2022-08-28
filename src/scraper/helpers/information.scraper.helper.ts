@@ -1,10 +1,11 @@
-import { CheerioAPI, Element } from "cheerio"
-export class ScraperHelper{
+import { CheerioAPI, Element, load } from "cheerio";
+import {PageScraperHelper} from './page.scraper.helper'
+
+export class InformationScraperHelper {
     $: CheerioAPI;
     constructor($: CheerioAPI){
         this.$ = $
     }
-
     scrapeLinks = (): string[] => {
         const links: string[] =[]
         this.$('a.css-1m051bw')
@@ -73,5 +74,17 @@ export class ScraperHelper{
                phone = phone.concat(this.$(el).text().trim())
         })
         return phone
+    }
+
+    scrapeLowestRatedReview = (): string =>{
+        return this.$('.comment__09f24__gu0rG').find('span').first().text()
+    }
+
+    scrapeHighestRatedReview = async (businessLink: string): Promise<string> => {
+        const pageScraperHelper = new PageScraperHelper()
+        const businessPageLinkSortedByDesc = businessLink.substring(0, businessLink.length - 4) + '&desc'
+        const businessPageHtmlSortedByDesc = await pageScraperHelper.scrapePage(businessPageLinkSortedByDesc)
+        const $$ = load(businessPageHtmlSortedByDesc)
+        return $$('.comment__09f24__gu0rG').find('span').first().text()
     }
 }

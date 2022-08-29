@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { CheerioAPI, load } from 'cheerio';
+import { info } from 'console';
+import { Repository } from 'typeorm';
 import { GetBusinessDto } from './dto/get-business.dto';
+import { Business } from './entities/business.entity';
+import { DataBaseHelper } from './helpers/db.helper';
 import { InformationScraperHelper } from './helpers/information-scraper.helper';
 import { PageScraperHelper } from './helpers/page-scraper.helper'
 
 @Injectable()
 export class ScraperService {
+    constructor(
+        @InjectRepository(Business)
+        private readonly businessRepository: Repository<Business>
+    ){}
 
     getBusinessLinks(pageHtml: string): string[] {
         const $ = load(pageHtml);
@@ -42,6 +51,7 @@ export class ScraperService {
     }
 
     async scrapeBusinessData(city: string): Promise<GetBusinessDto[]> {
+        console.time('performance')
         let businessesLinks = []
         const pageScraperHelper = new PageScraperHelper()
 
@@ -55,8 +65,15 @@ export class ScraperService {
             const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
             const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)
             await pageScraperHelper.timer(500)
-            businessesData.push(await this.extractBusinessPageInformation(businessPageHtml, businessLink))
+            const business = await this.extractBusinessPageInformation(businessPageHtml, businessLink)
+            const savedBusiness = await DataBaseHelper.createUniqueBusiness(business, this.businessRepository)
+            if(!savedBusiness){
+                continue
+            }else{
+                businessesData.push(savedBusiness)
+            }
         }
+        console.timeEnd('performance')
         return businessesData
     }
 }

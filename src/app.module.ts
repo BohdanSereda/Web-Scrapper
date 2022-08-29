@@ -4,7 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ScraperModule,
+  imports: [
+    ScraperModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env'
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.MYSQL_HOST,
@@ -14,8 +18,6 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.MYSQL_DB,
       synchronize: true,
       autoLoadEntities: true
-    })],
-  controllers: [],
-  providers: [],
+    })]
 })
 export class AppModule {}

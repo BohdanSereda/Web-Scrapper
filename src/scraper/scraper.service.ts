@@ -52,4 +52,8 @@ export class ScraperService {
         console.timeEnd('performance')
         return businessesData
     }
+
+    async getBusinesses(city: string){
+        return await DataBaseHelper.getBusinesses(city, this.businessRepository)
+    }
 }

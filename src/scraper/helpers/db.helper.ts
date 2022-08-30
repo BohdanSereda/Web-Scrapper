@@ -18,4 +18,16 @@ export class DataBaseHelper {
         const createdBusiness = businessRepository.create(business)
         return businessRepository.save(createdBusiness)
     }
+
+    static async getBusinesses(city: string, businessRepository: Repository<Business>){
+        if (city) {            
+            return await businessRepository.find({
+                where: {
+                    city: city
+                }
+            })
+        } else {
+            return await businessRepository.find()
+        }
+    }
 }

@@ -2,12 +2,22 @@ import { Module } from '@nestjs/common';
 import { ScraperModule } from './scraper/scraper.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
     ScraperModule,
     ConfigModule.forRoot({
       envFilePath: '.env'
+    }),
+    MailerModule.forRoot({
+      transport:{
+        host: process.env.MAILER_HOST,
+        auth:{
+          user: process.env.MAILER_USER,
+          pass: process.env.MAILER_PASSWORD
+        }
+      }
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

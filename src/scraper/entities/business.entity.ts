@@ -34,4 +34,7 @@ export class Business{
 
     @Column("simple-array")
     workingHours: string[]
+
+    @Column()
+    city: string;
 }

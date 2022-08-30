@@ -5,6 +5,7 @@ import { CheerioAPI, load } from 'cheerio';
 import { info } from 'console';
 import { Repository } from 'typeorm';
 import { GetBusinessDto } from './dto/get-business.dto';
+
 import { Business } from './entities/business.entity';
 import { DataBaseHelper } from './helpers/db.helper';
 import { InformationScraperHelper } from './helpers/information-scraper.helper';
@@ -22,7 +23,7 @@ export class ScraperService {
         const informationScraperHelper = new InformationScraperHelper($)
         return informationScraperHelper.scrapeLinks()
     }
-    extractBusinessPageInformation = async (businessPageHtml: string, businessLink: string) => {
+    extractBusinessPageInformation = async (businessPageHtml: string, businessLink: string, city: string) => {
         const $: CheerioAPI = load(businessPageHtml);
         const informationScraperHelper = new InformationScraperHelper($)
 
@@ -46,7 +47,8 @@ export class ScraperService {
             lowest_rated_review,
             highest_rated_review,
             amenities,
-            workingHours
+            workingHours,
+            city: city.toLowerCase()
         }
     }
 
@@ -65,7 +67,7 @@ export class ScraperService {
             const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
             const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)
             await pageScraperHelper.timer(500)
-            const business = await this.extractBusinessPageInformation(businessPageHtml, businessLink)
+            const business = await this.extractBusinessPageInformation(businessPageHtml, businessLink, city)
             const savedBusiness = await DataBaseHelper.createUniqueBusiness(business, this.businessRepository)
             if(!savedBusiness){
                 continue

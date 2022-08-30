@@ -34,4 +34,7 @@ export class GetBusinessDto {
     @IsArray()
     @IsString()
     readonly workingHours: string[];
+
+    @IsString()
+    readonly city: string;
 }

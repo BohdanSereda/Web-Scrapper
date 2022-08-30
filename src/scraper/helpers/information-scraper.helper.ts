@@ -6,6 +6,7 @@ export class InformationScraperHelper {
     constructor($: CheerioAPI) {
         this.$ = $
     }
+
     scrapeLinks = (): string[] => {
         const links: string[] = []
         this.$('a.css-1m051bw')
@@ -15,6 +16,7 @@ export class InformationScraperHelper {
             })
         return links
     }
+
 
     scrapeName = (): string => {
         return this.$('div[data-testid="photoHeader"]').find('h1').text().trim()
@@ -86,5 +88,31 @@ export class InformationScraperHelper {
         const businessPageHtmlSortedByDesc = await pageScraperHelper.scrapePage(businessPageLinkSortedByDesc)
         const $$ = load(businessPageHtmlSortedByDesc)
         return $$('.comment__09f24__gu0rG').find('span').first().text()
+    }
+
+    extractBusinessPageInformation = async (businessLink: string, city: string) => {
+        const name: string = this.scrapeName();
+        const description: string = this.scrapeDescription();
+        const images: string[] = this.scrapeImages()
+        const amenities: string[] = this.scrapeAmenities()
+        const workingHours: string[] = this.scrapeWorkingHours()
+        const address: string = this.scrapeAddress()
+        const phone: string = this.scrapePhone()
+        const rating: number = this.scrapeRating()
+        const lowest_rated_review: string = this.scrapeLowestRatedReview()
+        const highest_rated_review: string = await this.scrapeHighestRatedReview(businessLink)
+        return {
+            name,
+            description,
+            images,
+            address,
+            phone,
+            rating,
+            lowest_rated_review,
+            highest_rated_review,
+            amenities,
+            workingHours,
+            city: city.toLowerCase()
+        }
     }
 }

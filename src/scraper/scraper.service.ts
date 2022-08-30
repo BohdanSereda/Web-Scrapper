@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -15,7 +16,8 @@ import { PageScraperHelper } from './helpers/page-scraper.helper'
 export class ScraperService {
     constructor(
         @InjectRepository(Business)
-        private readonly businessRepository: Repository<Business>
+        private readonly businessRepository: Repository<Business>,
+        private readonly mailerService: MailerService
     ){}
 
     getBusinessLinks(pageHtml: string): string[] {
@@ -24,7 +26,8 @@ export class ScraperService {
         return informationScraperHelper.scrapeLinks()
     }
 
-    async scrapeBusinessData(city: string): Promise<GetBusinessDto[]> {
+    async scrapeBusinessData(city: string, email: string): Promise<GetBusinessDto[]> {
+        console.log(email, typeof email)
         console.time('performance')
         let businessesLinks = []
         const pageScraperHelper = new PageScraperHelper()
@@ -49,6 +52,12 @@ export class ScraperService {
                 businessesData.push(savedBusiness)
             }
         }
+        await this.mailerService.sendMail({
+            to: email,
+            from: 'scraper.api.study@gmail.com',
+            subject: 'Scraping finished',
+            text: 'Scraping finished'
+        })
         console.timeEnd('performance')
         return businessesData
     }

@@ -56,6 +56,7 @@ export class ScraperService {
 
         await EmailHelper.sendEmail(this.mailerService, email)
         console.timeEnd('performance')
+        console.log(`scraped ${businessesData.length} businesses`);
         return businessesData
     }
 

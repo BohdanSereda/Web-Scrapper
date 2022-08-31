@@ -85,6 +85,7 @@ export class InformationScraperHelper {
     scrapeHighestRatedReview = async (businessLink: string): Promise<string> => {
         const pageScraperHelper = new PageScraperHelper()
         const businessPageLinkSortedByDesc = businessLink.substring(0, businessLink.length - 4) + '&desc'
+        await pageScraperHelper.timer(5000)
         const businessPageHtmlSortedByDesc = await pageScraperHelper.scrapePage(businessPageLinkSortedByDesc)
         const $$ = load(businessPageHtmlSortedByDesc)
         return $$('.comment__09f24__gu0rG').find('span').first().text()

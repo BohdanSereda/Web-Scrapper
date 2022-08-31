@@ -9,6 +9,7 @@ import { GetBusinessDto } from './dto/get-business.dto';
 
 import { Business } from './entities/business.entity';
 import { DataBaseHelper } from './helpers/db.helper';
+import { EmailHelper } from './helpers/email.hepler';
 import { InformationScraperHelper } from './helpers/information-scraper.helper';
 import { PageScraperHelper } from './helpers/page-scraper.helper'
 
@@ -52,12 +53,8 @@ export class ScraperService {
                 businessesData.push(savedBusiness)
             }
         }
-        await this.mailerService.sendMail({
-            to: email,
-            from: 'scraper.api.study@gmail.com',
-            subject: 'Scraping finished',
-            text: 'Scraping finished'
-        })
+
+        await EmailHelper.sendEmail(this.mailerService, email)
         console.timeEnd('performance')
         return businessesData
     }

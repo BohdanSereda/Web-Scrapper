@@ -27,7 +27,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
       entities: ["dist/**/*.entity.js"],
-      synchronize: true,
+      synchronize: false,
       autoLoadEntities: true
     })]
 })

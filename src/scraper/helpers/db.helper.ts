@@ -7,7 +7,8 @@ export class DataBaseHelper {
     static async createUniqueBusiness(business: GetBusinessDto, businessRepository: Repository<Business>){
         const existBusiness = await businessRepository.findOne({
             where: {
-                name: business.name
+                name: business.name,
+                city: business.city
             }
         })
         

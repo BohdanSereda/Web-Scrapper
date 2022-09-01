@@ -51,7 +51,7 @@ export class ScraperService {
                 console.time('business scraping')
                 const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
                 const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)
-                await TimerHelper.timer(10000)
+                await TimerHelper.timer(17000)
                 const $: CheerioAPI = load(businessPageHtml);
                 const informationScraperHelper = new InformationScraperHelper($)
                 const business: GetBusinessDto = await informationScraperHelper.extractBusinessPageInformation(businessLink, city)

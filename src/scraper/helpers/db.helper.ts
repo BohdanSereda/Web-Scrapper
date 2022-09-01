@@ -13,7 +13,7 @@ export class DataBaseHelper {
         })
         
         if(existBusiness){
-            return
+            return false
         }
 
         const createdBusiness = businessRepository.create(business)

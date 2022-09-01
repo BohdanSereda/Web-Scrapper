@@ -35,15 +35,15 @@ export class ScraperService {
         try {
             for (let i = 0; i < 50; i += 10) {
                 const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc=' + city + '&start=' + i
-                await TimerHelper.timer(5000)
                 const businessListPageHtml = await pageScraperHelper.scrapePage(link)
+                await TimerHelper.timer(5000)
                 businessesLinks = businessesLinks.concat(this.getBusinessLinks(businessListPageHtml))
             }
             const businessesData = []
             for (const businessesLink of businessesLinks) {
                 const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
-                await TimerHelper.timer(5000)
                 const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)
+                await TimerHelper.timer(5000)
                 const $: CheerioAPI = load(businessPageHtml);
                 const informationScraperHelper = new InformationScraperHelper($)
                 const business: GetBusinessDto = await informationScraperHelper.extractBusinessPageInformation(businessLink, city)
@@ -59,8 +59,8 @@ export class ScraperService {
             await EmailHelper.sendEmail(this.mailerService, email, `Successfully scraped ${businessesData.length} businesses`)
             return 'done'
         } catch (error) {
-            console.error(error)
             await EmailHelper.sendEmail(this.mailerService, email, `Scraping error: something went wrong :(`)
+            console.error(error)  
         }
 
     }

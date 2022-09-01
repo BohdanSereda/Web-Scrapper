@@ -47,6 +47,6 @@ export class GetBusinessDto {
     readonly workingHours: string[];
 
     @IsString()
-    @ApiProperty({type: Array, description: 'business  city'})
+    @ApiProperty({type: String, description: 'business  city'})
     readonly city: string;
 }

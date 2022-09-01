@@ -55,6 +55,9 @@ export class ScraperService {
                 const $: CheerioAPI = load(businessPageHtml);
                 const informationScraperHelper = new InformationScraperHelper($)
                 const business: GetBusinessDto = await informationScraperHelper.extractBusinessPageInformation(businessLink, city)
+                if(!business){
+                    continue
+                }
                 const savedBusiness = await DataBaseHelper.createUniqueBusiness(business, this.businessRepository)
                 console.timeEnd('business scraping')
                 if(!savedBusiness){

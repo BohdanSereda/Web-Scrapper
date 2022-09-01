@@ -9,5 +9,4 @@ export class PageScraperHelper {
             console.error(error.message)
         }
     }
-    timer = (ms: number) => new Promise(r => setTimeout(r, ms))
 }

@@ -29,7 +29,8 @@ export class ScraperService {
 
     async scrapeBusinessData(city: string, email: string): Promise<string> {
         console.time('performance time')
-        let businessesLinks = []
+        const businessesLinks = []
+        const businessesData = []
         const pageScraperHelper = new PageScraperHelper()
         try {
             const existBusinesses = await DataBaseHelper.getBusinessesByCity(city, this.businessRepository)
@@ -43,10 +44,10 @@ export class ScraperService {
                 const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc=' + city + '&start=' + i
                 const businessListPageHtml = await pageScraperHelper.scrapePage(link)
                 await TimerHelper.timer(10000)
-                businessesLinks = businessesLinks.concat(this.getBusinessLinks(businessListPageHtml))
+                businessesLinks.push(...this.getBusinessLinks(businessListPageHtml))
                 console.timeEnd('links scraping time')
             }
-            const businessesData = []
+
             for (const businessesLink of businessesLinks) {
                 console.time('business scraping time')
                 const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
@@ -68,10 +69,10 @@ export class ScraperService {
             }
             console.timeEnd('performance time')
             console.log(`scraped ${businessesData.length} businesses, city: ${city}`);
-            await EmailHelper.sendEmail(this.mailerService, email, `Successfully scraped ${businessesData.length} businesses, city: ${city}`)
+            await EmailHelper.sendEmail(this.mailerService, email, `Successfully scraped: ${businessesData.length} businesses, city: ${city}`)
             return 'done'
         } catch (error) {
-            await EmailHelper.sendEmail(this.mailerService, email, `Scraping error: something went wrong :(`)
+            await EmailHelper.sendEmail(this.mailerService, email, `Scraping error: something went wrong :(\nBefore error scraped: ${businessesData.length} businesses, city: ${city}`)
             console.error(error)  
         }
 

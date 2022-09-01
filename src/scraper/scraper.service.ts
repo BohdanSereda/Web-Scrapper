@@ -28,11 +28,18 @@ export class ScraperService {
     }
 
     async scrapeBusinessData(city: string, email: string): Promise<string> {
+
         console.log(email, typeof email)
         console.time('performance')
         let businessesLinks = []
         const pageScraperHelper = new PageScraperHelper()
         try {
+            const existBusinesses = await DataBaseHelper.getBusinessesByCity(city, this.businessRepository)
+
+            if(existBusinesses.length){
+                await EmailHelper.sendEmail(this.mailerService, email, `This city has been already scraped: ${city}`)
+                return `This city has been already scraped: ${city}`
+            }
             for (let i = 0; i < 50; i += 10) {
                 const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc=' + city + '&start=' + i
                 const businessListPageHtml = await pageScraperHelper.scrapePage(link)

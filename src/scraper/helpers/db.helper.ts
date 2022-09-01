@@ -20,6 +20,16 @@ export class DataBaseHelper {
         return businessRepository.save(createdBusiness)
     }
 
+    static async getBusinessesByCity(city: string, businessRepository: Repository<Business>){
+         
+        return await businessRepository.find({
+            where: {
+                city: city
+            }
+        })
+  
+    }
+
     static async getBusinesses(city: string, businessRepository: Repository<Business>){
         if (city) {            
             return await businessRepository.find({

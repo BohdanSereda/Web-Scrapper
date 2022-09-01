@@ -28,7 +28,7 @@ export class ScraperService {
     }
 
     async scrapeBusinessData(city: string, email: string): Promise<string> {
-        console.time('performance')
+        console.time('performance time')
         let businessesLinks = []
         const pageScraperHelper = new PageScraperHelper()
         try {
@@ -39,16 +39,16 @@ export class ScraperService {
                 return `This city has been already scraped: ${city}`
             }
             for (let i = 0; i < 50; i += 10) {
-                console.time('links scraping')
+                console.time('links scraping time')
                 const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc=' + city + '&start=' + i
                 const businessListPageHtml = await pageScraperHelper.scrapePage(link)
                 await TimerHelper.timer(10000)
                 businessesLinks = businessesLinks.concat(this.getBusinessLinks(businessListPageHtml))
-                console.timeEnd('links scraping')
+                console.timeEnd('links scraping time')
             }
             const businessesData = []
             for (const businessesLink of businessesLinks) {
-                console.time('business scraping')
+                console.time('business scraping time')
                 const businessLink = 'https://www.yelp.com' + businessesLink + '&sort_by=rating_asc'
                 const businessPageHtml = await pageScraperHelper.scrapePage(businessLink)
                 await TimerHelper.timer(17000)
@@ -59,14 +59,14 @@ export class ScraperService {
                     continue
                 }
                 const savedBusiness = await DataBaseHelper.createUniqueBusiness(business, this.businessRepository)
-                console.timeEnd('business scraping')
+                console.timeEnd('business scraping time')
                 if(!savedBusiness){
                     continue
                 }else{
                     businessesData.push(savedBusiness)
                 }
             }
-            console.timeEnd('performance')
+            console.timeEnd('performance time')
             console.log(`scraped ${businessesData.length} businesses, city: ${city}`);
             await EmailHelper.sendEmail(this.mailerService, email, `Successfully scraped ${businessesData.length} businesses, city: ${city}`)
             return 'done'

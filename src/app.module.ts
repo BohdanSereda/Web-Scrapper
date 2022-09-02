@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TelegramModule } from './telegram/telegram.module';
+import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TelegramModule } from './telegram/telegram.module';
       synchronize: false,
       autoLoadEntities: true
     }),
-    TelegramModule]
+    TelegramModule,
+    ReservationModule]
 })
 export class AppModule {}

@@ -43,7 +43,7 @@ export class ScraperService {
                 console.time('links scraping time')
                 const link = 'https://www.yelp.com/search?find_desc=Restaurants&find_loc=' + city + '&start=' + i
                 const businessListPageHtml = await pageScraperHelper.scrapePage(link)
-                await TimerHelper.timer(10000)
+                await TimerHelper.timer(15000)
                 businessesLinks.push(...this.getBusinessLinks(businessListPageHtml))
                 console.timeEnd('links scraping time')
             }

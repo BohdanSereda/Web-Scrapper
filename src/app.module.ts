@@ -3,6 +3,7 @@ import { ScraperModule } from './scraper/scraper.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       entities: ["dist/**/*.entity.js"],
       synchronize: false,
       autoLoadEntities: true
-    })]
+    }),
+    TelegramModule]
 })
 export class AppModule {}

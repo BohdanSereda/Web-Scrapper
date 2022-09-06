@@ -5,12 +5,19 @@ import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TelegramModule } from './telegram/telegram.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import * as LocalSession from 'telegraf-session-local';
+
+const sessions = new LocalSession({database: 'session_db.json'})
 
 @Module({
   imports: [
-    ScraperModule,
     ConfigModule.forRoot({
       envFilePath: '.env'
+    }),
+    TelegrafModule.forRoot({
+      middlewares: [sessions.middleware()],
+      token: process.env.BOT_API_KEY
     }),
     MailerModule.forRoot({
       transport:{
@@ -32,6 +39,7 @@ import { ReservationModule } from './reservation/reservation.module';
       synchronize: false,
       autoLoadEntities: true
     }),
+    ScraperModule,
     TelegramModule,
     ReservationModule]
 })

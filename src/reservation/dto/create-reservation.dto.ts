@@ -5,17 +5,22 @@ export class CreateReservationDto {
     @IsString()
     @IsNotEmpty()
     @IsEmail()
+    @ApiProperty({type: String, description: 'user email name'})
     readonly email: string
 
     @IsString()
+    @ApiProperty({type: String, description: 'user name'})
     readonly userName: string
 
     @IsString()
+    @ApiProperty({type: String, description: 'reservation date'})
     readonly date: string
 
     @IsString()
+    @ApiProperty({type: String, description: 'reservation time'})
     readonly time: string
 
     @IsString()
-    readonly status?: 'pending' | 'confirmed' | 'declined'
+    @ApiProperty({type: String, description: 'reservation status'})
+    status?: 'pending' | 'confirmed' | 'declined'
 }

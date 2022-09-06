@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Business } from '../scraper/entities/business.entity';
 import { TelegramService } from './telegram.service';
-import { TelegramController } from './telegram.controller';
+import { TelegramUpdate } from './telegram.update'
 
 @Module({
-  controllers: [TelegramController],
-  providers: [TelegramService]
+  imports: [TypeOrmModule.forFeature([Business])],
+  controllers: [],
+  providers: [TelegramService, TelegramUpdate]
 })
 export class TelegramModule {}

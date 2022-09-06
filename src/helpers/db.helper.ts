@@ -3,6 +3,7 @@ import { GetBusinessDto } from "../scraper/dto/get-business.dto";
 import { Business } from "../scraper/entities/business.entity";
 import { CreateReservationDto } from "src/reservation/dto/create-reservation.dto";
 import { Reservation } from "src/reservation/entities/reservation.entity";
+import { UpdateReservationsStatusDto } from "src/reservation/dto/update-reservation-status.dto";
 
 
 export class DataBaseHelper {
@@ -62,6 +63,7 @@ export class DataBaseHelper {
     }
 
     static async createReservation(reservation: CreateReservationDto, reservationRepository: Repository<Reservation>){
+        reservation.status = 'pending'
         const createdBusiness = reservationRepository.create(reservation)
         return reservationRepository.save(createdBusiness)
     }
@@ -74,9 +76,13 @@ export class DataBaseHelper {
         })
     }
 
-    static async updateReservationsStatus(id: string, status: string, reservationRepository: Repository<Reservation>){
-        await reservationRepository.createQueryBuilder().update({status}).where({id: +id}).execute()
-        return await reservationRepository.findOneBy({id: +id})
+    static async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto, reservationRepository: Repository<Reservation>){        
+        const existingReservation = await reservationRepository.findOneBy({id: +id})
+        if(!existingReservation){ 
+            return false
+        }
+        existingReservation.status = updateReservationsStatus.status
+        return await reservationRepository.save(existingReservation)
     }
 
 }

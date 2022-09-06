@@ -74,4 +74,9 @@ export class DataBaseHelper {
         })
     }
 
+    static async updateReservationsStatus(id: string, status: string, reservationRepository: Repository<Reservation>){
+        await reservationRepository.createQueryBuilder().update({status}).where({id: +id}).execute()
+        return await reservationRepository.findOneBy({id: +id})
+    }
+
 }

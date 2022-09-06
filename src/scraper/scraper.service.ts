@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { GetBusinessDto } from './dto/get-business.dto';
 
 import { Business } from './entities/business.entity';
-import { DataBaseHelper } from './helpers/db.helper';
+import { DataBaseHelper } from '../helpers/db.helper';
 import { EmailHelper } from './helpers/email.hepler';
 import { InformationScraperHelper } from './helpers/information-scraper.helper';
 import { PageScraperHelper } from './helpers/page-scraper.helper'

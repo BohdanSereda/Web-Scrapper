@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
+import { UpdateReservationsStatusDto } from './dto/update-reservation-status.dto';
 import { ReservationService } from './reservation.service';
 
 @Controller('reservation')
@@ -17,7 +18,7 @@ export class ReservationController {
   }
 
   @Patch(':id')
-  updateReservationsStatus(@Param('id') id: string){
-    return this.reservationService.updateReservationsStatus(id)
+  updateReservationsStatus(@Param('id') id: string, @Body() status: UpdateReservationsStatusDto){
+    return this.reservationService.updateReservationsStatus(id, status)
   }
 }

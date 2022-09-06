@@ -11,7 +11,7 @@ export class ScraperController {
   constructor(private readonly scraperService: ScraperService) { }
 
   @Post()
-  @ApiResponse({status: 200, description: 'Scrape business data from first 5 pages and post unique data in data base', type: String })
+  @ApiResponse({status: 201, description: 'Scrape business data from first 5 pages and post unique data in data base'})
   @ApiResponse({ status: 500, description: 'Internal server error.'})
   async scrapeBusinessData(@Body() body: scrapeBusinessDto, @Res() res) {
     const result = await Promise.race([

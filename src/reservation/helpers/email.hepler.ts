@@ -1,16 +1,19 @@
 import { MailerService } from "@nestjs-modules/mailer";
+import { CreateReservationDto } from "../dto/create-reservation.dto";
 
 export class EmailHelper{
-    static async sendEmail(mailerService: MailerService, email:string, status:string){
+    static async sendEmail(mailerService: MailerService, updateReservation: CreateReservationDto){
         let text = ''
-        if(status === 'confirmed'){
-            text = "your reservation was confirmed"
-        }
-        if(status === 'declined'){
-            text = "your reservation was confirmed"
+
+        if(updateReservation.status === 'confirmed'){
+            text = `Your reservation was confirmed\nDate: ${updateReservation.date}.\nTime: ${updateReservation.time}`
+        }else if(updateReservation.status === 'declined'){
+            text = `Your reservation was declined\nDate: ${updateReservation.date}.\nTime: ${updateReservation.time}`
+        }else {
+            return
         }
         await mailerService.sendMail({
-            to: email,
+            to: updateReservation.email,
             from: 'scraper.api.study@gmail.com',
             subject: 'Reservation',
             text

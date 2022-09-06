@@ -18,6 +18,6 @@ export class Reservation{
     time: string
 
     @Column()
-    status: string
+    status: 'pending' | 'confirmed' | 'declined'
 
 }

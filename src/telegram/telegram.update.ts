@@ -2,10 +2,6 @@ import { Ctx, Hears, InjectBot, Message, On, Start, Update } from 'nestjs-telegr
 import { Telegraf } from 'telegraf';
 import { TelegramService } from './telegram.service';
 import { ActionButtons } from './helpers/telegram.buttons';
-import { DataBaseHelper } from '../helpers/db.helper';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Business } from '../scraper/entities/business.entity';
-import { Repository } from 'typeorm';
 import { Context } from './helpers/telegram.context';
 
 @Update()
@@ -18,6 +14,8 @@ export class TelegramUpdate {
   @Start()
   async startCommand(ctx: Context) {
     await ctx.reply('hi', ActionButtons.renderButtons())
+    const userData = await ctx.getChatMember(ctx.chat.id)
+    ctx.session.userName = userData.user.username
   }
 
   @Hears('Cities')
@@ -28,19 +26,19 @@ export class TelegramUpdate {
   @Hears('Restaurants')
   async getRestaurantsContext(ctx: Context){
     ctx.session.type = 'Restaurants'
-    await ctx.reply('type city where you want to see available restaurants')
+    await ctx.reply('Type city name where you want to see available restaurants')
   }
 
-  @Hears('Hours')
+  @Hears('Working Hours')
   async getWorkingHoursContext(ctx: Context){
     ctx.session.type = 'Working Hours'
-    await ctx.reply('type restaurant where you want to see available working hours')
+    await ctx.reply('Type restaurant name where you want to see available working hours')
   }
 
   @Hears('Reserve')
   async getReserveContext(ctx: Context){
     ctx.session.type = 'Reserve Restaurants'
-    await ctx.reply('type restaurant where you want to reserve a table')
+    await ctx.reply('Type restaurant name where you want to reserve a table')
   }
   @On('text')
   async getMessage(@Message('text') message: string, @Ctx() ctx: Context){
@@ -48,16 +46,23 @@ export class TelegramUpdate {
     console.log(ctx.session.type); 
     switch(ctx.session.type){
       case 'Restaurants':
-        this.telegramService.showRestaurants(ctx, message)
+        await this.telegramService.showRestaurants(ctx, message)
         break;
       case 'Working Hours':
-        this.telegramService.showWorkingHours(ctx, message)
+        await this.telegramService.showWorkingHours(ctx, message)
         break;
       case 'Reserve Restaurants':
         this.telegramService.reserveRestaurant(ctx, message)
         break;
       case 'Reserve Day':
-         this.telegramService.reserveDay(ctx, message)
+        this.telegramService.reserveDay(ctx, message)
+        break;
+      case'Reserve Working Hours':
+        this.telegramService.reserveWorkingHours(ctx, message)
+        break;
+      case 'Email Providing':
+        this.telegramService.finishReservation(ctx, message)
+        break
     }
   } 
 }

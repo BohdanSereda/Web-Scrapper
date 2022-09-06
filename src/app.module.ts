@@ -11,7 +11,10 @@ import * as LocalSession from 'telegraf-session-local';
 const sessions = new LocalSession({database: 'session_db.json'})
 
 @Module({
-  imports: [
+  imports: [    
+    ScraperModule,
+    TelegramModule,
+    ReservationModule,
     ConfigModule.forRoot({
       envFilePath: '.env'
     }),
@@ -36,11 +39,8 @@ const sessions = new LocalSession({database: 'session_db.json'})
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DB,
       entities: ["dist/**/*.entity.js"],
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true
-    }),
-    ScraperModule,
-    TelegramModule,
-    ReservationModule]
+    })]
 })
 export class AppModule {}

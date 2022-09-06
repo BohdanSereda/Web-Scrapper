@@ -1,6 +1,8 @@
 import { Repository } from "typeorm";
 import { GetBusinessDto } from "../scraper/dto/get-business.dto";
 import { Business } from "../scraper/entities/business.entity";
+import { CreateReservationDto } from "src/reservation/dto/create-reservation.dto";
+import { Reservation } from "src/reservation/entities/reservation.entity";
 
 
 export class DataBaseHelper {
@@ -57,6 +59,19 @@ export class DataBaseHelper {
                 name: restaurantName
             }
         })
-       
     }
+
+    static async createReservation(reservation: CreateReservationDto, reservationRepository: Repository<Reservation>){
+        const createdBusiness = reservationRepository.create(reservation)
+        return reservationRepository.save(createdBusiness)
+    }
+
+    static async getAllPendingReservations(reservationRepository: Repository<Reservation>){
+        return await reservationRepository.find({
+            where: {
+                status: 'pending'
+            }
+        })
+    }
+
 }

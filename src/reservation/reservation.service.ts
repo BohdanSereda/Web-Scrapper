@@ -22,8 +22,8 @@ export class ReservationService {
         return DataBaseHelper.getAllPendingReservations(this.reservationRepository)
     }
 
-    async updateReservationsStatus(id: string, body: UpdateReservationsStatusDto){
-        const updateReservation = await DataBaseHelper.updateReservationsStatus(id, body, this.reservationRepository)
+    async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto){
+        const updateReservation = await DataBaseHelper.updateReservationsStatus(id, updateReservationsStatus, this.reservationRepository)
         if(updateReservation){
             await EmailHelper.sendEmail(this.mailerService, updateReservation)
             return updateReservation

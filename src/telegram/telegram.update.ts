@@ -43,7 +43,6 @@ export class TelegramUpdate {
   @On('text')
   async getMessage(@Message('text') message: string, @Ctx() ctx: Context){
     if(!ctx.session.type) return
-    console.log(ctx.session.type); 
     switch(ctx.session.type){
       case 'Restaurants':
         await this.telegramService.showRestaurants(ctx, message)

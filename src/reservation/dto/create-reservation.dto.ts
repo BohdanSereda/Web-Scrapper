@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { StatusType } from './custom-types';
 
 export class CreateReservationDto {
     @IsString()
@@ -21,6 +22,6 @@ export class CreateReservationDto {
     readonly time: string
 
     @IsString()
-    @ApiProperty({type: String, description: 'reservation status'})
-    status?: 'pending' | 'confirmed' | 'declined'
+    @ApiProperty({type: "StatusType", description: 'reservation status'})
+    status?: StatusType
 }

@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { StatusType } from '../dto/custom-types';
 
 @Entity()
 export class Reservation{
@@ -18,6 +19,6 @@ export class Reservation{
     time: string
 
     @Column()
-    status: 'pending' | 'confirmed' | 'declined'
+    status: StatusType
 
 }

@@ -24,36 +24,36 @@ export class TelegramService {
     async showRestaurants(ctx: Context, message: string){
         const rawRestaurants = await DataBaseHelper.getBusinessesByCity(message, this.businessRepository)
         if(!rawRestaurants.length){
-          ctx.reply('I don\'t know about this city 😥')
-        }else{
-          const reply = rawRestaurants.map((restaurant, index)=>`${index + 1}. ${restaurant.name}`).join('\n')
-          await ctx.reply(reply + '\nYou can see working hours or reserve table by pressing the corresponding button')
-          ctx.session.type = ''
+          return await ctx.reply('I don\'t know about this city 😥')
         }
+        const reply = rawRestaurants.map((restaurant, index)=>`${index + 1}. ${restaurant.name}`).join('\n')
+        await ctx.reply(reply + '\nYou can see working hours or reserve table by pressing the corresponding button')
+        ctx.session.type = ''
     }
 
     async showWorkingHours(ctx: Context, message: string){
         const restaurant = (await DataBaseHelper.getRestaurant(message, this.businessRepository))
         if(!restaurant){
-            await ctx.reply('I don\'t know about this restaurant 😥') 
-        }else{
-            const reply = restaurant.workingHours.map((day, index)=>`${index + 1}. ${day}`).join('\n')
-            await ctx.reply(reply + '\nYou can reserve table by pressing the corresponding button')
-            ctx.session.type = ''
-        }     
+           return await ctx.reply('I don\'t know about this restaurant 😥') 
+        }
+        const reply = restaurant.workingHours.map((day, index)=>`${index + 1}. ${day}`).join('\n')
+        await ctx.reply(reply + '\nYou can reserve table by pressing the corresponding button')
+        ctx.session.type = ''
+            
     }
 
     async reserveRestaurant(ctx: Context, message: string){
         const restaurant = await DataBaseHelper.getRestaurant(message, this.businessRepository)
         if(!restaurant){
-            ctx.reply('I don\'t know about this restaurant 😥')   
-        }else if(!restaurant.workingHours.length){
-            ctx.reply('This restaurant is closed')
-        }else{
-            ctx.reply('Choose day in formate DD-MM-YYYY')
+            return await ctx.reply('I don\'t know about this restaurant 😥')   
+        }
+        if(!restaurant.workingHours.length){
+            return await ctx.reply('This restaurant is closed')
+        }
+            await ctx.reply('Choose day in formate DD-MM-YYYY')
             ctx.session.restaurant = restaurant
             ctx.session.type = 'Reserve Day'
-        }
+        
     }
 
     async reserveDay(ctx: Context, message: string){
@@ -61,7 +61,7 @@ export class TelegramService {
         const date = moment(message, "DD-MM-YYYY"); 
         const isValid = await TelegramBotValidator.dateValidation(date, ctx, workingHours)
         if(isValid){
-            ctx.reply('Choose time in formate HH:mm')
+            await ctx.reply('Choose time in formate HH:mm')
             ctx.session.date = date.format('LL').toString()
             ctx.session.type = 'Reserve Working Hours'
         }

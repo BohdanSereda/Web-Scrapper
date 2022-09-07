@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Reservation } from './entities/reservation.entity';
@@ -19,16 +19,28 @@ export class ReservationService {
     }
 
     async getAllPendingReservations(){
+        
         return DataBaseHelper.getAllPendingReservations(this.reservationRepository)
     }
 
     async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto){
+        const status = updateReservationsStatus.status
+        if(status !== 'confirmed' && status !== 'declined' && status !== 'pending'){
+            throw new HttpException({
+                status: HttpStatus.BAD_REQUEST,
+                error: 'incorrect status value status field must have values: "pending", "declined", "confirmed"',
+            }, HttpStatus.BAD_REQUEST)
+        }
         const updateReservation = await DataBaseHelper.updateReservationsStatus(id, updateReservationsStatus, this.reservationRepository)
         if(updateReservation){
             await EmailHelper.sendEmail(this.mailerService, updateReservation)
             return updateReservation
         }else{
-            return {error:'can\'t find reservation'}
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: 'can\'t find reservation',
+            }, HttpStatus.NOT_FOUND)
+
         }
     }
 }

@@ -4,6 +4,7 @@ import { Business } from "../scraper/entities/business.entity";
 import { CreateReservationDto } from "src/reservation/dto/create-reservation.dto";
 import { Reservation } from "src/reservation/entities/reservation.entity";
 import { UpdateReservationsStatusDto } from "src/reservation/dto/update-reservation-status.dto";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 
 export class DataBaseHelper {
@@ -80,6 +81,12 @@ export class DataBaseHelper {
         const existingReservation = await reservationRepository.findOneBy({id: +id})
         if(!existingReservation){ 
             return false
+        }
+        if(existingReservation.status === updateReservationsStatus.status){
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: `reservation has been already ${existingReservation.status}`,
+            }, HttpStatus.NOT_FOUND)
         }
         existingReservation.status = updateReservationsStatus.status
         return await reservationRepository.save(existingReservation)

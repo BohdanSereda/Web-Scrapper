@@ -8,7 +8,7 @@ import { GetBusinessDto } from './dto/get-business.dto';
 
 import { Business } from './entities/business.entity';
 import { DataBaseHelper } from '../helpers/db.helper';
-import { EmailHelper } from './helpers/email.hepler';
+import { EmailHelper } from '../helpers/email.helper';
 import { InformationScraperHelper } from './helpers/information-scraper.helper';
 import { PageScraperHelper } from './helpers/page-scraper.helper'
 import { TimerHelper } from './helpers/timer.helper';
@@ -31,12 +31,18 @@ export class ScraperService {
         console.time('performance time')
         const businessesLinks = []
         const businessesData = []
+        const emailHelper = new EmailHelper()
+        const emailTemplates = {
+            scrapingError: `Scraping error: something went wrong :(\nBefore error scraped: ${businessesData.length} businesses, city: ${city}`,
+            scrapingExistingCity: `This city has been already scraped: ${city}`,
+            success:  `Successfully scraped: ${businessesData.length} businesses, city: ${city}`
+        }
         const pageScraperHelper = new PageScraperHelper()
         try {
             const existBusinesses = await DataBaseHelper.getBusinessesByCity(city, this.businessRepository)
 
             if(existBusinesses.length){
-                await EmailHelper.sendEmail(this.mailerService, email, `This city has been already scraped: ${city}`)
+                await emailHelper.sendEmail(this.mailerService, 'scraper.api.study@gmail.com', 'Scraping', email, emailTemplates.scrapingExistingCity)
                 return `This city has been already scraped: ${city}`
             }
             for (let i = 0; i < 50; i += 10) {
@@ -69,10 +75,11 @@ export class ScraperService {
             }
             console.timeEnd('performance time')
             console.log(`scraped ${businessesData.length} businesses, city: ${city}`);
-            await EmailHelper.sendEmail(this.mailerService, email, `Successfully scraped: ${businessesData.length} businesses, city: ${city}`)
+
+            await emailHelper.sendEmail(this.mailerService, 'scraper.api.study@gmail.com', 'Scraping', email, emailTemplates.success)
             return 'done'
         } catch (error) {
-            await EmailHelper.sendEmail(this.mailerService, email, `Scraping error: something went wrong :(\nBefore error scraped: ${businessesData.length} businesses, city: ${city}`)
+            await emailHelper.sendEmail(this.mailerService, 'scraper.api.study@gmail.com', 'Scraping', email, emailTemplates.scrapingError)
             console.error(error)  
         }
 

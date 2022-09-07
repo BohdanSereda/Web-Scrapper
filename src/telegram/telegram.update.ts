@@ -35,7 +35,7 @@ export class TelegramUpdate {
     await ctx.reply('Type restaurant name where you want to see available working hours')
   }
 
-  @Hears('Reserve')
+  @Hears('Reserve Table')
   async getReserveContext(ctx: Context){
     ctx.session.type = 'Reserve Restaurants'
     await ctx.reply('Type restaurant name where you want to reserve a table')

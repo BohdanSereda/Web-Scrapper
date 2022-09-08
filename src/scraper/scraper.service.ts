@@ -76,14 +76,13 @@ export class ScraperService {
                 console.timeEnd('business scraping time')
                 if(!savedBusiness){
                     continue
-                }else{
-                    businessesData.push(savedBusiness)
                 }
+                businessesData.push(savedBusiness)
+                emailData.businessesCount = businessesData.length     
             }
             console.timeEnd('performance time')
             console.log(`scraped ${businessesData.length} businesses, city: ${city}`);
-            
-            emailData.businessesCount = businessesData.length
+
             emailData.status = 'success'
             await emailHelper.sendScrapingResultEmail(this.mailerService, emailData)
             return 'done'

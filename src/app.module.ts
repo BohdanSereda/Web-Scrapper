@@ -6,7 +6,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { TelegramModule } from './telegram/telegram.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { TelegrafModule } from 'nestjs-telegraf';
-import { EventModule } from './event/event.module';
+import { BusinessEventModule } from './businessEvent/business-event.module';
 import { TwitterModule } from './twitter/twitter.module';
 import * as LocalSession from 'telegraf-session-local';
 
@@ -44,7 +44,7 @@ const sessions = new LocalSession({database: 'session_db.json'})
       synchronize: true,
       autoLoadEntities: true
     }),
-    EventModule,
+    BusinessEventModule,
     TwitterModule]
 })
 export class AppModule {}

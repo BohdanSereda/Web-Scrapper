@@ -1,0 +1,1 @@
+export type StatusType = 'daily'| 'weekly'| 'monthly' | 'yearly'| ''

@@ -1,4 +1,3 @@
-import { Business } from '../../scraper/entities/business.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { FrequencyType } from '../dto/custom-types';
 

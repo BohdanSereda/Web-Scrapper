@@ -46,6 +46,7 @@
     "swagger-ui-express": "^4.5.0",
     "telegraf": "^4.9.1",
     "telegraf-session-local": "^2.1.0",
+    "twitter": "^1.7.1",
     "twitter-api-v2": "^1.12.6",
     "typeorm": "^0.3.9"
   },
@@ -57,6 +58,7 @@
     "@types/jest": "28.1.4",
     "@types/node": "^16.0.0",
     "@types/supertest": "^2.0.11",
+    "@types/twitter": "^1.7.1",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.1",

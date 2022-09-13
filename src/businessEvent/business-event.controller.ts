@@ -14,7 +14,7 @@ export class BusinessEventController {
   \nevent_start example: 13.09.2022:9:00
   \nevent_end example: 13.09.2022:13:30` })
   @ApiResponse({ status: 400, description: 'bad request.'})
-  @ApiResponse({ status: 500, description: 'Internal server error.'})
+  @ApiResponse({ status: 500, description: 'internal server error.'})
   createEvent(@Body() createBusinessEventDto: CreateBusinessEventDto){
     return this.businessEventService.createEvent(createBusinessEventDto)
   }

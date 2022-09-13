@@ -9,6 +9,7 @@ import { TelegrafModule } from 'nestjs-telegraf';
 import { BusinessEventModule } from './businessEvent/business-event.module';
 import { TwitterModule } from './twitter/twitter.module';
 import * as LocalSession from 'telegraf-session-local';
+import { MulterModule } from '@nestjs/platform-express';
 
 const sessions = new LocalSession({database: 'session_db.json'})
 
@@ -17,6 +18,9 @@ const sessions = new LocalSession({database: 'session_db.json'})
     ScraperModule,
     TelegramModule,
     ReservationModule,
+    BusinessEventModule,
+    TwitterModule,  
+    MulterModule.register(),
     ConfigModule.forRoot({
       envFilePath: '.env'
     }),
@@ -43,8 +47,6 @@ const sessions = new LocalSession({database: 'session_db.json'})
       entities: ["dist/**/*.entity.js"],
       synchronize: true,
       autoLoadEntities: true
-    }),
-    BusinessEventModule,
-    TwitterModule]
+    })]
 })
 export class AppModule {}

@@ -147,7 +147,7 @@ export class BusinessEventValidator {
             }
             case 'daily': {
 
-                if ((end.dayOfYear() - start.dayOfYear()) > 0) {
+                if ((end.diff(start, 'hour')) >= 24) {
                     message = `daily event can't be longer then 1 day `
                     return message
                 }

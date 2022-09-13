@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataBaseHelper } from 'src/helpers/db.helper';
 import { Business } from 'src/scraper/entities/business.entity';
@@ -17,7 +17,22 @@ export class BusinessEventService {
     ) { }
 
     async createEvent(createBusinessEventDto: CreateBusinessEventDto) {
-        return await BusinessEventValidator.dateValidation(createBusinessEventDto, this.businessEventRepository, this.businessRepository)
+        try {
+            const validationResponse = await BusinessEventValidator.dateValidation(createBusinessEventDto, this.businessEventRepository, this.businessRepository)
+            if (typeof validationResponse === 'string') {
+                throw new HttpException({
+                    status: HttpStatus.BAD_REQUEST,
+                    error: `bad request: ${validationResponse}`,
+                }, HttpStatus.BAD_REQUEST)
+            }
+            return validationResponse
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: `internal server error.`,
+            }, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
     }
 
     async getBusinessEvents(createBusinessEventDto: CreateBusinessEventDto){

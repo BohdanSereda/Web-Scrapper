@@ -13,6 +13,7 @@ export class BusinessEventController {
   \nfrequency should be  "daily " or "weekly" or "" it determines frequency of event "" - one time event 
   \nevent_start example: 13.09.2022:9:00
   \nevent_end example: 13.09.2022:13:30` })
+  @ApiResponse({ status: 400, description: 'bad request.'})
   @ApiResponse({ status: 500, description: 'Internal server error.'})
   createEvent(@Body() createBusinessEventDto: CreateBusinessEventDto){
     return this.businessEventService.createEvent(createBusinessEventDto)

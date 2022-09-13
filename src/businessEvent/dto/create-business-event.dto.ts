@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsString, IsNotEmpty, IsEmail, IsIn } from "class-validator"
-import { StatusType } from "./custom-types"
+import { IsString, IsNotEmpty, IsIn, IsNumber, IsOptional } from "class-validator"
+import { FrequencyType } from "./custom-types"
 
 export class CreateBusinessEventDto {
     @IsString()
@@ -29,7 +29,16 @@ export class CreateBusinessEventDto {
     readonly features: string
 
     @IsString()
-    @IsIn(['daily', 'weekly', 'monthly', 'yearly', ''])
-    @ApiProperty({type: "StatusType", description: 'event frequency'})
-    frequency?: StatusType
+    @IsIn(['daily', 'weekly', ''])
+    @ApiProperty({type: "FrequencyType", description: 'event frequency'})
+    frequency?: FrequencyType
+
+    @IsNumber()
+    @IsOptional()
+    visitorsCount?: number
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({type: String, description: 'event businessId'})
+    readonly businessId: number
 }

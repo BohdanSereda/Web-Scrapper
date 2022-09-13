@@ -1,1 +1,1 @@
-export type StatusType = 'daily'| 'weekly'| 'monthly' | 'yearly'| ''
+export type FrequencyType = 'daily'| 'weekly' | ''

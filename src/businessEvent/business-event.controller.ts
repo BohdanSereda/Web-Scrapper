@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Param, ParseFilePipe, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiResponse } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -60,5 +60,13 @@ export class BusinessEventController {
     )
     image){
     return this.businessEventService.createEvent(createBusinessEventDto, image)
+  }
+
+  @ApiResponse({status: 201, description: `increment user counter.`})
+  @ApiResponse({ status: 404, description: 'not found.'})
+  @ApiResponse({ status: 500, description: 'internal server error.'})
+  @Patch(':id')
+  incrementUserCounter(@Param('id') businessEventId: string){
+    return this.businessEventService.incrementUserCounter(businessEventId)
   }
 }

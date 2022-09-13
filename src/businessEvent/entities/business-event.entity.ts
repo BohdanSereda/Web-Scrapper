@@ -19,9 +19,6 @@ export class BusinessEvent{
     description: string
 
     @Column()
-    image: string 
-
-    @Column()
     features: string
 
     @Column()

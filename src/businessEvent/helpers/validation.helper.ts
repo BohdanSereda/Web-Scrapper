@@ -140,7 +140,6 @@ export class BusinessEventValidator {
                             message = validated
                             return true
                         }
-                        twitterService.postTweet(validated, image)
                         return validated
                     })
 

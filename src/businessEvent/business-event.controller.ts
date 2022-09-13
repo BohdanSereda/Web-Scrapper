@@ -3,7 +3,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { BusinessEventService } from './business-event.service';
 import { CreateBusinessEventDto } from './dto/create-business-event.dto';
 
-@Controller('event')
+@Controller('business-event')
 export class BusinessEventController {
   constructor(private readonly businessEventService: BusinessEventService) {}
   

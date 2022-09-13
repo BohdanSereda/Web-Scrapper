@@ -6,6 +6,7 @@ import { BusinessEvent } from 'src/businessEvent/entities/business-event.entity'
 export class TwitterService {    
     async postTweet(event, image){
         try {
+            console.log(event)
             const rwClient = TwitterHelper.twitterGetClient()
             const media = await Promise.all([rwClient.v1.uploadMedia(image.path)])
             await rwClient.v1.tweet(

@@ -40,7 +40,10 @@ export class DataBaseHelper {
         return await businessRepository.findOne({ where: { name: restaurantName } })
     }
 
-    static async createReservation(reservation: CreateReservationDto, reservationRepository: Repository<Reservation>) {
+    static async createReservation(
+        reservation: CreateReservationDto, 
+        reservationRepository: Repository<Reservation>) {
+
         reservation.status = 'pending'
         const createdBusiness = reservationRepository.create(reservation)
         return reservationRepository.save(createdBusiness)
@@ -50,7 +53,11 @@ export class DataBaseHelper {
         return await reservationRepository.find({ where: { status: 'pending' } })
     }
 
-    static async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto, reservationRepository: Repository<Reservation>) {
+    static async updateReservationsStatus(
+        id: string, updateReservationsStatus: 
+        UpdateReservationsStatusDto, reservationRepository: 
+        Repository<Reservation>) {
+
         const existingReservation = await reservationRepository.findOneBy({ id: +id })
         if (!existingReservation || existingReservation.status === updateReservationsStatus.status) {
             return false
@@ -61,7 +68,11 @@ export class DataBaseHelper {
 
 
 
-    static async getBusinessEvents(businessEvent: CreateBusinessEventDto, businessEventRepository: Repository<BusinessEvent>, businessRepository: Repository<Business>){
+    static async getBusinessEvents(
+        businessEvent: CreateBusinessEventDto, 
+        businessEventRepository: Repository<BusinessEvent>, 
+        businessRepository: Repository<Business>){
+
         const business = await DataBaseHelper.getBusinessesByID(`${businessEvent.businessId}`, businessRepository )
         if(!business){
             return false
@@ -69,7 +80,11 @@ export class DataBaseHelper {
         return await businessEventRepository.find({where:{businessId: businessEvent.businessId}})
     }
 
-    static async createUniqueBusinessEvents(businessEvent: CreateBusinessEventDto, businessEventRepository: Repository<BusinessEvent>, businessRepository: Repository<Business>) {
+    static async createUniqueBusinessEvents(
+        businessEvent: CreateBusinessEventDto, 
+        businessEventRepository: Repository<BusinessEvent>, 
+        businessRepository: Repository<Business>) {
+
         businessEvent.visitorsCount = 0
         const business = await DataBaseHelper.getBusinessesByID(`${businessEvent.businessId}`, businessRepository)        
         
@@ -79,5 +94,16 @@ export class DataBaseHelper {
 
         const createdBusinessEvent = businessEventRepository.create(businessEvent)
         return businessEventRepository.save(createdBusinessEvent)
+    }
+
+    static async incrementBusinessEventUserCounter(
+        businessEventId: string, 
+        businessEventRepository: Repository<BusinessEvent>){
+            const businessEvent = await businessEventRepository.findOneBy({id:+businessEventId})
+            if(!businessEvent){
+                return false
+            }
+            businessEvent.visitorsCount+=1
+            return businessEventRepository.save(businessEvent)
     }
 }

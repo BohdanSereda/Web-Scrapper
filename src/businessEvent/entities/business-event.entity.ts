@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { StatusType } from '../dto/custom-types';
+import { Business } from '../../scraper/entities/business.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { FrequencyType } from '../dto/custom-types';
 
 @Entity()
 export class BusinessEvent{
@@ -25,5 +26,11 @@ export class BusinessEvent{
     features: string
 
     @Column()
-    frequency: StatusType
+    frequency: FrequencyType
+
+    @Column()
+    visitorsCount: number
+
+    @Column()
+    businessId: number;
 }

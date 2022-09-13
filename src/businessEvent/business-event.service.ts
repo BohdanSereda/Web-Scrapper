@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataBaseHelper } from 'src/helpers/db.helper';
 import { Business } from 'src/scraper/entities/business.entity';
+import { TwitterService } from 'src/twitter/twitter.service';
 import { Repository } from 'typeorm';
 import { CreateBusinessEventDto } from './dto/create-business-event.dto';
 import { BusinessEvent } from './entities/business-event.entity';
@@ -14,11 +15,17 @@ export class BusinessEventService {
         private readonly businessEventRepository: Repository<BusinessEvent>,
         @InjectRepository(Business)
         private readonly businessRepository: Repository<Business>,
+        private readonly twitterService: TwitterService
     ) { }
 
-    async createEvent(createBusinessEventDto: CreateBusinessEventDto) {
+    async createEvent(createBusinessEventDto: CreateBusinessEventDto, image) {
         try {
-            const validationResponse = await BusinessEventValidator.dateValidation(createBusinessEventDto, this.businessEventRepository, this.businessRepository)
+            const validationResponse = await BusinessEventValidator.dateValidation(
+                createBusinessEventDto,
+                this.businessEventRepository,
+                this.businessRepository,
+                this.twitterService,
+                image)
             if (typeof validationResponse === 'string') {
                 throw new HttpException({
                     status: HttpStatus.BAD_REQUEST,
@@ -28,14 +35,22 @@ export class BusinessEventService {
             return validationResponse
         } catch (error) {
             throw new HttpException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                error: `internal server error.`,
-            }, HttpStatus.INTERNAL_SERVER_ERROR)
+                status: error.response.status,
+                error: error.response.error,
+            }, error.response.status)
         }
 
     }
 
-    async getBusinessEvents(createBusinessEventDto: CreateBusinessEventDto){
-        return DataBaseHelper.getBusinessEvents(createBusinessEventDto, this.businessEventRepository, this.businessRepository)
+
+    async incrementUserCounter(businessEventId: string) {
+        const businessEvent = await DataBaseHelper.incrementBusinessEventUserCounter(businessEventId, this.businessEventRepository)
+        if(!businessEvent){
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: `no event with id: ${businessEventId}`,
+            }, HttpStatus.NOT_FOUND)
+        }
+        return businessEvent
     }
 }

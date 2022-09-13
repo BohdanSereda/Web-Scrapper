@@ -4,9 +4,13 @@ import { BusinessEventController } from './business-event.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BusinessEvent } from './entities/business-event.entity';
 import { Business } from 'src/scraper/entities/business.entity';
+import { TwitterModule } from 'src/twitter/twitter.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BusinessEvent, Business])],
+  imports: [
+    TwitterModule,
+    TypeOrmModule.forFeature([BusinessEvent, Business])
+  ],
   controllers: [BusinessEventController],
   providers: [BusinessEventService]
 })

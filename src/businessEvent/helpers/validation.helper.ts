@@ -44,8 +44,10 @@ export class BusinessEventValidator {
             }
             case '':
             case 'weekly': {
+                if(event.frequency === 'daily' && isInInterval){
+                    return  `there has already planed event for this restaurant for this time: ${event.name}`
+                }
                 if (coincided) {
-
                     if (isInInterval) { 
                         return  `there has already planed event for this restaurant for this time: ${event.name}`
                     }

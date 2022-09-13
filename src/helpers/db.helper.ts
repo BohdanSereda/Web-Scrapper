@@ -4,6 +4,8 @@ import { Business } from "../scraper/entities/business.entity";
 import { CreateReservationDto } from "src/reservation/dto/create-reservation.dto";
 import { Reservation } from "src/reservation/entities/reservation.entity";
 import { UpdateReservationsStatusDto } from "src/reservation/dto/update-reservation-status.dto";
+import { BusinessEvent } from "src/businessEvent/entities/business-event.entity";
+import { CreateBusinessEventDto } from "src/businessEvent/dto/create-business-event.dto";
 
 export class DataBaseHelper {
     static async createUniqueBusiness(business: GetBusinessDto, businessRepository: Repository<Business>) {
@@ -16,7 +18,11 @@ export class DataBaseHelper {
     }
 
     static async getBusinessesByCity(city: string, businessRepository: Repository<Business>) {
-        return await businessRepository.find({ where: { city: city } })
+        return await businessRepository.find({ where: { city } })
+    }
+
+    static async getBusinessesByID(id: string, businessRepository: Repository<Business>) {
+        return await businessRepository.findOneBy({id:+id})
     }
 
     static async getBusinesses(city: string, businessRepository: Repository<Business>) {
@@ -53,4 +59,25 @@ export class DataBaseHelper {
         return await reservationRepository.save(existingReservation)
     }
 
+
+
+    static async getBusinessEvents(businessEvent: CreateBusinessEventDto, businessEventRepository: Repository<BusinessEvent>, businessRepository: Repository<Business>){
+        const business = await DataBaseHelper.getBusinessesByID(`${businessEvent.businessId}`, businessRepository )
+        if(!business){
+            return false
+        }
+        return await businessEventRepository.find({where:{businessId: businessEvent.businessId}})
+    }
+
+    static async createUniqueBusinessEvents(businessEvent: CreateBusinessEventDto, businessEventRepository: Repository<BusinessEvent>, businessRepository: Repository<Business>) {
+        businessEvent.visitorsCount = 0
+        const business = await DataBaseHelper.getBusinessesByID(`${businessEvent.businessId}`, businessRepository)        
+        
+        if(!business){
+            return false
+        }
+
+        const createdBusinessEvent = businessEventRepository.create(businessEvent)
+        return businessEventRepository.save(createdBusinessEvent)
+    }
 }

@@ -19,10 +19,6 @@ export class CreateBusinessEventDto {
     @IsString()
     @ApiProperty({type: String, description: 'event description'})
     readonly description: string
-    
-    @IsString()
-    @ApiProperty({type: String, description: 'event image'})
-    readonly image: string
 
     @IsString()
     @ApiProperty({type: String, description: 'event features'})
@@ -31,7 +27,7 @@ export class CreateBusinessEventDto {
     @IsString()
     @IsIn(['daily', 'weekly', ''])
     @ApiProperty({type: "FrequencyType", description: 'event frequency'})
-    frequency?: FrequencyType
+    frequency: FrequencyType
 
     @IsNumber()
     @IsOptional()

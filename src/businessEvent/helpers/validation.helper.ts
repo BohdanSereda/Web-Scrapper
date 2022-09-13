@@ -4,52 +4,53 @@ import { DataBaseHelper } from "src/helpers/db.helper";
 import { Business } from "src/scraper/entities/business.entity";
 import { Repository } from "typeorm";
 import { BusinessEvent } from "../entities/business-event.entity";
+import { TwitterService } from "src/twitter/twitter.service";
 
 export class BusinessEventValidator {
 
-    static dayCoincidenceValidation(start: moment.Moment, 
-                                    end: moment.Moment, 
-                                    existingEventStart: moment.Moment, 
-                                    existingEventEnd: moment.Moment){
-        return start.day() === existingEventStart.day() || 
-        start.day() === existingEventEnd.day() ||
-        end.day() === existingEventStart.day() ||
-        end.day() === existingEventEnd.day()
+    static dayCoincidenceValidation(start: moment.Moment,
+        end: moment.Moment,
+        existingEventStart: moment.Moment,
+        existingEventEnd: moment.Moment) {
+        return start.day() === existingEventStart.day() ||
+            start.day() === existingEventEnd.day() ||
+            end.day() === existingEventStart.day() ||
+            end.day() === existingEventEnd.day()
     }
 
-    static datePeriodValidation(normalizedStart: moment.Moment, 
-                                normalizedEnd: moment.Moment, 
-                                normalizedExistingEnd: moment.Moment, 
-                                normalizedExistingStart: moment.Moment){
+    static datePeriodValidation(normalizedStart: moment.Moment,
+        normalizedEnd: moment.Moment,
+        normalizedExistingEnd: moment.Moment,
+        normalizedExistingStart: moment.Moment) {
         return normalizedStart.isBetween(normalizedExistingStart, normalizedExistingEnd) ||
-               normalizedEnd.isBetween(normalizedExistingStart, normalizedExistingEnd) ||
-               normalizedExistingStart.isBetween(normalizedStart, normalizedEnd) ||
-               normalizedExistingEnd.isBetween(normalizedStart, normalizedEnd) ||
-               normalizedStart.isSame(normalizedExistingStart) ||
-               normalizedStart.isSame(normalizedExistingEnd) ||
-               normalizedEnd.isSame(normalizedExistingStart) ||
-               normalizedEnd.isSame(normalizedExistingEnd)
+            normalizedEnd.isBetween(normalizedExistingStart, normalizedExistingEnd) ||
+            normalizedExistingStart.isBetween(normalizedStart, normalizedEnd) ||
+            normalizedExistingEnd.isBetween(normalizedStart, normalizedEnd) ||
+            normalizedStart.isSame(normalizedExistingStart) ||
+            normalizedStart.isSame(normalizedExistingEnd) ||
+            normalizedEnd.isSame(normalizedExistingStart) ||
+            normalizedEnd.isSame(normalizedExistingEnd)
     }
 
     static dateIntervalValidation(data) {
-        let {event, normalized, context, coincided}  = data                          
+        let { event, normalized, context, coincided } = data
         const { normalizedStart, normalizedEnd, normalizedExistingEnd, normalizedExistingStart } = normalized
-        const isInInterval = BusinessEventValidator.datePeriodValidation(normalizedStart, normalizedEnd, normalizedExistingEnd, normalizedExistingStart )
+        const isInInterval = BusinessEventValidator.datePeriodValidation(normalizedStart, normalizedEnd, normalizedExistingEnd, normalizedExistingStart)
         switch (context) {
             case 'daily': {
-                if (isInInterval) { 
-                    return  `there has already planed event for this restaurant for this time: ${event.name}`
+                if (isInInterval) {
+                    return `there has already planed event for this restaurant for this time: ${event.name}`
                 }
                 return false
             }
             case '':
             case 'weekly': {
-                if(event.frequency === 'daily' && isInInterval){
-                    return  `there has already planed event for this restaurant for this time: ${event.name}`
+                if (event.frequency === 'daily' && isInInterval) {
+                    return `there has already planed event for this restaurant for this time: ${event.name}`
                 }
                 if (coincided) {
-                    if (isInInterval) { 
-                        return  `there has already planed event for this restaurant for this time: ${event.name}`
+                    if (isInInterval) {
+                        return `there has already planed event for this restaurant for this time: ${event.name}`
                     }
                 }
                 return false
@@ -64,7 +65,7 @@ export class BusinessEventValidator {
         const year = 2022
         const date = 1
         const subtractionResults = [(end.dayOfYear() - start.dayOfYear()),
-                                    (existingEventEnd.dayOfYear() - existingEventStart.dayOfYear())]
+        (existingEventEnd.dayOfYear() - existingEventStart.dayOfYear())]
         const normalizedStart = start.set({
             year,
             month: 0,
@@ -99,16 +100,18 @@ export class BusinessEventValidator {
         return { normalizedStart, normalizedEnd, normalizedExistingStart, normalizedExistingEnd }
     }
 
-    static async dateValidation(createBusinessEventDto: CreateBusinessEventDto, 
-                                businessEventRepository: Repository<BusinessEvent>, 
-                                businessRepository: Repository<Business>) {
+    static async dateValidation(createBusinessEventDto: CreateBusinessEventDto,
+        businessEventRepository: Repository<BusinessEvent>,
+        businessRepository: Repository<Business>,
+        twitterService: TwitterService,
+        image) {
         let start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
         let end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
         const today = moment().startOf('day')
         const events = await DataBaseHelper.getBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
 
         let message = 'incorrect business ID'
-        if(events === false){
+        if (events === false) {
             return message
         }
         if (!start.isValid() || start.isSameOrAfter(end) || start.isBefore(today) || !end.isValid()) {
@@ -118,60 +121,66 @@ export class BusinessEventValidator {
         if (!events) {
             return createBusinessEventDto
         }
-        switch (createBusinessEventDto.frequency) {
-            case '':
-            case 'weekly': {
+        try {
 
-                const unFilteredEvents = events.some(event => {
-                    start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
-                    end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
-                    const existingEventStart = moment(event.event_start, 'DD-MM-YYYY hh:mm')
-                    const existingEventEnd = moment(event.event_end, 'DD-MM-YYYY hh:mm');
-                    const coincided = BusinessEventValidator.dayCoincidenceValidation(start, end, existingEventStart, existingEventEnd)
-                    const normalized = BusinessEventValidator.normalization(start, end, existingEventStart, existingEventEnd)
-                    const data = {event, normalized, context: createBusinessEventDto.frequency, coincided}
+            switch (createBusinessEventDto.frequency) {
+                case '':
+                case 'weekly': {
+                    const unFilteredEvents = events.some(event => {
+                        start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
+                        end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
+                        const existingEventStart = moment(event.event_start, 'DD-MM-YYYY hh:mm')
+                        const existingEventEnd = moment(event.event_end, 'DD-MM-YYYY hh:mm');
+                        const coincided = BusinessEventValidator.dayCoincidenceValidation(start, end, existingEventStart, existingEventEnd)
+                        const normalized = BusinessEventValidator.normalization(start, end, existingEventStart, existingEventEnd)
+                        const data = { event, normalized, context: createBusinessEventDto.frequency, coincided }
 
-                    const validated = BusinessEventValidator.dateIntervalValidation(data)
-                    if(typeof validated === 'string'){
-                        message = validated
-                        return true
-                    } 
-                    return validated
-                })
+                        const validated = BusinessEventValidator.dateIntervalValidation(data)
+                        if (typeof validated === 'string') {
+                            message = validated
+                            return true
+                        }
+                        twitterService.postTweet(validated, image)
+                        return validated
+                    })
 
-                if (unFilteredEvents) {
-                    return message
+                    if (unFilteredEvents) {
+                        return message
+                    }
+                    await twitterService.postTweet(createBusinessEventDto, image)
+                    return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
                 }
+                case 'daily': {
 
-                return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
+                    if ((end.diff(start, 'hour')) >= 24) {
+                        message = `daily event can't be longer then 1 day `
+                        return message
+                    }
+
+                    const unFilteredEvents = events.some(event => {
+                        start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
+                        end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
+                        const existingEventStart = moment(event.event_start, 'DD-MM-YYYY hh:mm')
+                        const existingEventEnd = moment(event.event_end, 'DD-MM-YYYY hh:mm');
+                        const normalized = BusinessEventValidator.normalization(start, end, existingEventStart, existingEventEnd)
+                        const data = { event, normalized, context: createBusinessEventDto.frequency }
+                        const validated = BusinessEventValidator.dateIntervalValidation(data)
+                        if (typeof validated === 'string') {
+                            message = validated
+                            return true
+                        }
+                        return validated
+                    })
+
+                    if (unFilteredEvents) {
+                        return message
+                    }
+                    await twitterService.postTweet(createBusinessEventDto, image)
+                    return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
+                }
             }
-            case 'daily': {
-
-                if ((end.diff(start, 'hour')) >= 24) {
-                    message = `daily event can't be longer then 1 day `
-                    return message
-                }
-
-                const unFilteredEvents = events.some(event => {
-                    start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
-                    end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
-                    const existingEventStart = moment(event.event_start, 'DD-MM-YYYY hh:mm')
-                    const existingEventEnd = moment(event.event_end, 'DD-MM-YYYY hh:mm');
-                    const normalized = BusinessEventValidator.normalization(start, end, existingEventStart, existingEventEnd)
-                    const data = {event, normalized, context: createBusinessEventDto.frequency}
-                    const validated = BusinessEventValidator.dateIntervalValidation(data)
-                    if(typeof validated === 'string'){
-                        message = validated
-                        return true
-                    } 
-                    return validated
-                })
-
-                if (unFilteredEvents) {
-                    return message
-                }
-                return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
-            }
+        } catch (error) {
+            return error
         }
     }
 }

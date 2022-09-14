@@ -96,7 +96,7 @@ export class ScraperService {
 
     }
 
-    async getBusinesses(city: string){
+    async getBusinesses(city: string): Promise<Business[]>{
         const businesses = await DataBaseHelper.getBusinesses(city, this.businessRepository)
         if(!businesses.length){
             throw new HttpException({

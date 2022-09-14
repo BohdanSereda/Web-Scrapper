@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CheerioAPI, load } from 'cheerio';
@@ -13,6 +13,7 @@ import { InformationScraperHelper } from './helpers/information-scraper.helper';
 import { PageScraperHelper } from './helpers/page-scraper.helper'
 import { TimerHelper } from './helpers/timer.helper';
 import { EmailScrapingDataDto } from './dto/email-scraping-data.dto';
+import { ScrapeBusinessDto } from './dto/scrape-business.dto';
 
 @Injectable()
 export class ScraperService {
@@ -28,7 +29,8 @@ export class ScraperService {
         return informationScraperHelper.scrapeLinks()
     }
 
-    async scrapeBusinessData(city: string, email: string): Promise<string> {
+    async scrapeBusinessData(scrapeBusinessDto: ScrapeBusinessDto): Promise<string> {
+        const {city, email} = scrapeBusinessDto
         console.time('performance time')
         const businessesLinks = []
         const businessesData = []
@@ -95,6 +97,13 @@ export class ScraperService {
     }
 
     async getBusinesses(city: string){
-        return await DataBaseHelper.getBusinesses(city, this.businessRepository)
+        const businesses = await DataBaseHelper.getBusinesses(city, this.businessRepository)
+        if(!businesses.length){
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: `businesses not fount: ${city}`,
+            }, HttpStatus.NOT_FOUND)
+        }
+        return businesses
     }
 }

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BusinessEventService } from './business-event.service';
 import { CreateBusinessEventDto } from './dto/create-business-event.dto';
 import { fileFilter } from './dto/custom-types';
+import { BusinessEvent } from './entities/business-event.entity';
 
 @Controller('business-event')
 export class BusinessEventController {
@@ -49,7 +50,7 @@ export class BusinessEventController {
   \nevent_end example: 13.09.2022:13:30` })
   @ApiResponse({ status: 400, description: 'bad request.'})
   @ApiResponse({ status: 500, description: 'internal server error.'})
-  createEvent(
+  async createEvent(
     @Body() createBusinessEventDto: CreateBusinessEventDto, 
     @UploadedFile(
       new ParseFilePipe({
@@ -58,7 +59,7 @@ export class BusinessEventController {
         ]
       })
     )
-    image){
+    image: Express.Multer.File): Promise<BusinessEvent>{
     return this.businessEventService.createEvent(createBusinessEventDto, image)
   }
 
@@ -66,7 +67,7 @@ export class BusinessEventController {
   @ApiResponse({ status: 404, description: 'not found.'})
   @ApiResponse({ status: 500, description: 'internal server error.'})
   @Patch(':id')
-  incrementUserCounter(@Param('id') businessEventId: string){
+  async incrementUserCounter(@Param('id') businessEventId: string): Promise<BusinessEvent>{
     return this.businessEventService.incrementUserCounter(businessEventId)
   }
 }

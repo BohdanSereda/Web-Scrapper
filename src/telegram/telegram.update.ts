@@ -3,6 +3,7 @@ import { Telegraf } from 'telegraf';
 import { TelegramService } from './telegram.service';
 import { ActionButtons } from './helpers/telegram.buttons';
 import { Context } from './helpers/telegram.context';
+import { Message as TelegrafMessage } from 'telegraf/typings/core/types/typegram';
 
 @Update()
 export class TelegramUpdate {
@@ -12,36 +13,36 @@ export class TelegramUpdate {
     ) {}
 
   @Start()
-  async startCommand(ctx: Context) {
+  async startCommand(ctx: Context): Promise<void>{
     await ctx.reply('hi', ActionButtons.renderButtons())
     const userData = await ctx.getChatMember(ctx.chat.id)
     ctx.session.userName = userData.user.username
   }
 
   @Hears('Cities')
-  async showCities(ctx: Context){
+  async showCities(ctx: Context): Promise<void>{
     this.telegramService.showCities(ctx)
   }
 
   @Hears('Restaurants')
-  async getRestaurantsContext(ctx: Context){
+  async getRestaurantsContext(ctx: Context): Promise<void>{
     ctx.session.type = 'Restaurants'
     await ctx.reply('Type city name where you want to see available restaurants')
   }
 
   @Hears('Working Hours')
-  async getWorkingHoursContext(ctx: Context){
+  async getWorkingHoursContext(ctx: Context): Promise<void>{
     ctx.session.type = 'Working Hours'
     await ctx.reply('Type restaurant name where you want to see available working hours')
   }
 
   @Hears('Reserve Table')
-  async getReserveContext(ctx: Context){
+  async getReserveContext(ctx: Context): Promise<void>{
     ctx.session.type = 'Reserve Restaurants'
     await ctx.reply('Type restaurant name where you want to reserve a table')
   }
   @On('text')
-  async getMessage(@Message('text') message: string, @Ctx() ctx: Context){
+  async getMessage(@Message('text') message: string, @Ctx() ctx: Context): Promise<void>{
     if(!ctx.session.type) return
     switch(ctx.session.type){
       case 'Restaurants':

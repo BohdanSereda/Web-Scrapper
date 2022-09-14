@@ -1,5 +1,4 @@
-import { BusinessEvent } from '../../businessEvent/entities/business-event.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Business{

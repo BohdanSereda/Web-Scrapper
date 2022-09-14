@@ -27,9 +27,9 @@ export class ReservationService {
         const updateReservation = await DataBaseHelper.updateReservationsStatus(id, updateReservationsStatus, this.reservationRepository)
         if (!updateReservation) {
             throw new HttpException({
-                status: HttpStatus.BAD_REQUEST,
-                error: 'bad request',
-            }, HttpStatus.BAD_REQUEST)
+                status: HttpStatus.NOT_FOUND,
+                error: `not found reservation with id: ${id}`,
+            }, HttpStatus.NOT_FOUND)
         }
         await emailHelper.sendReservationEmail(this.mailerService, updateReservation)
         return updateReservation

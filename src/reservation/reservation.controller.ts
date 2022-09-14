@@ -26,7 +26,7 @@ export class ReservationController {
   @Patch(':id')
   @ApiResponse({ status: 200, description: 'Update reservation with status.\nStatus field must have values: "pending", "declined", "confirmed"' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  @ApiResponse({ status: 400, description: 'bad request' })
+  @ApiResponse({ status: 404, description: 'Not found' })
   async updateReservationsStatus(@Param('id') id: string, @Body() updateReservationsStatus: UpdateReservationsStatusDto): Promise<Reservation> {
     return this.reservationService.updateReservationsStatus(id, updateReservationsStatus)
   }

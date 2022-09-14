@@ -33,10 +33,10 @@ export class DataBaseHelper {
 
     static async getCities(businessRepository: Repository<Business>) {
         const rawCities = await businessRepository.createQueryBuilder().select("city").groupBy('city').execute();
-        return rawCities.map(rawCity => rawCity.city)
+        return rawCities.map((rawCity: {city: string}) => rawCity.city)
     }
 
-    static async getRestaurant(restaurantName, businessRepository: Repository<Business>) {
+    static async getRestaurant(restaurantName: string, businessRepository: Repository<Business>) {
         return await businessRepository.findOne({ where: { name: restaurantName } })
     }
 
@@ -83,15 +83,13 @@ export class DataBaseHelper {
     static async createUniqueBusinessEvents(
         businessEvent: CreateBusinessEventDto, 
         businessEventRepository: Repository<BusinessEvent>, 
-        businessRepository: Repository<Business>) {
+        businessRepository: Repository<Business>): Promise<false | BusinessEvent> {
 
         businessEvent.visitorsCount = 0
         const business = await DataBaseHelper.getBusinessesByID(`${businessEvent.businessId}`, businessRepository)        
-        
         if(!business){
             return false
         }
-
         const createdBusinessEvent = businessEventRepository.create(businessEvent)
         return businessEventRepository.save(createdBusinessEvent)
     }
@@ -99,11 +97,12 @@ export class DataBaseHelper {
     static async incrementBusinessEventUserCounter(
         businessEventId: string, 
         businessEventRepository: Repository<BusinessEvent>){
-            const businessEvent = await businessEventRepository.findOneBy({id:+businessEventId})
-            if(!businessEvent){
-                return false
-            }
-            businessEvent.visitorsCount+=1
-            return businessEventRepository.save(businessEvent)
+
+        const businessEvent = await businessEventRepository.findOneBy({id:+businessEventId})
+        if(!businessEvent){
+            return false
+        }
+        businessEvent.visitorsCount+=1
+        return businessEventRepository.save(businessEvent)
     }
 }

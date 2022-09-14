@@ -18,7 +18,7 @@ export class BusinessEventService {
         private readonly twitterService: TwitterService
     ) { }
 
-    async createEvent(createBusinessEventDto: CreateBusinessEventDto, image) {
+    async createEvent(createBusinessEventDto: CreateBusinessEventDto, image: Express.Multer.File): Promise<false | BusinessEvent> {
         try {
             const validationResponse = await BusinessEventValidator.dateValidation(
                 createBusinessEventDto,
@@ -41,7 +41,6 @@ export class BusinessEventService {
         }
 
     }
-
 
     async incrementUserCounter(businessEventId: string) {
         const businessEvent = await DataBaseHelper.incrementBusinessEventUserCounter(businessEventId, this.businessEventRepository)

@@ -17,7 +17,7 @@ export class TelegramService {
 
     async showCities(ctx: Context): Promise<Message.TextMessage>{
         const cities = await DataBaseHelper.getCities(this.businessRepository)
-        const reply = cities.map((city: string, index)=> `${index + 1}. ${city}`).join('\n')
+        const reply = cities.map((city: string, index: number)=> `${index + 1}. ${city}`).join('\n')
         ctx.session.type = ''
         return await ctx.reply(reply + '\n\nYou can see restaurants by pressing the corresponding button')
     }  

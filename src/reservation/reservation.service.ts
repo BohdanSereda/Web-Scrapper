@@ -14,15 +14,15 @@ export class ReservationService {
         private readonly mailerService: MailerService
     ) { }
 
-    async createReservation(email: string, date: string, time: string, userName: string) {
+    async createReservation(email: string, date: string, time: string, userName: string): Promise<Reservation> {
         return DataBaseHelper.createReservation({ email, date, time, userName }, this.reservationRepository)
     }
 
-    async getAllPendingReservations() {
+    async getAllPendingReservations(): Promise<Reservation[]> {
         return DataBaseHelper.getAllPendingReservations(this.reservationRepository)
     }
 
-    async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto) {
+    async updateReservationsStatus(id: string, updateReservationsStatus: UpdateReservationsStatusDto): Promise<Reservation> {
         const emailHelper = new EmailHelper()
         const updateReservation = await DataBaseHelper.updateReservationsStatus(id, updateReservationsStatus, this.reservationRepository)
         if (!updateReservation) {

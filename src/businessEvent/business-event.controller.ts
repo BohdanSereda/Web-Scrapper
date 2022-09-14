@@ -59,7 +59,7 @@ export class BusinessEventController {
         ]
       })
     )
-    image: Express.Multer.File): Promise<BusinessEvent>{
+    image: Express.Multer.File): Promise<false | BusinessEvent>{
     return this.businessEventService.createEvent(createBusinessEventDto, image)
   }
 

@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { Context } from "./telegram.context";
 
 export class TelegramBotValidator{
-    static async dateValidation(date: moment.Moment, ctx: Context, workingHours){
+    static async dateValidation(date: moment.Moment, ctx: Context, workingHours: string[]): Promise<boolean>{
         const today = moment().startOf('day')
         
         if(date.isValid() && date.isSameOrAfter(today)){

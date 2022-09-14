@@ -104,7 +104,7 @@ export class BusinessEventValidator {
         businessEventRepository: Repository<BusinessEvent>,
         businessRepository: Repository<Business>,
         twitterService: TwitterService,
-        image) {
+        image: Express.Multer.File): Promise<string | BusinessEvent | false> {
         let start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
         let end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
         const today = moment().startOf('day')
@@ -119,10 +119,10 @@ export class BusinessEventValidator {
             return message
         }
         if (!events) {
-            return createBusinessEventDto
+            message = `internal server error`
+            return message
         }
         try {
-
             switch (createBusinessEventDto.frequency) {
                 case '':
                 case 'weekly': {

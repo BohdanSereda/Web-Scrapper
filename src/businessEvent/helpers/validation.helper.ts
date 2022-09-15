@@ -103,8 +103,7 @@ export class BusinessEventValidator {
     static async dateValidation(createBusinessEventDto: CreateBusinessEventDto,
         businessEventRepository: Repository<BusinessEvent>,
         businessRepository: Repository<Business>,
-        twitterService: TwitterService,
-        image: Express.Multer.File): Promise<string | BusinessEvent | false> {
+        ): Promise<string | boolean> {
         let start = moment(createBusinessEventDto.event_start, "DD MM YYYY, hh:mm");
         let end = moment(createBusinessEventDto.event_end, "DD MM YYYY, hh:mm");
         const today = moment().startOf('day')
@@ -114,14 +113,27 @@ export class BusinessEventValidator {
         if (events === false) {
             return message
         }
-        if (!start.isValid() || start.isSameOrAfter(end) || start.isBefore(today) || !end.isValid()) {
-            message = `your event is invalid`
+        if (!start.isValid()) {
+            message = `your event start date is invalid`
+            return message
+        }
+        if(start.isSameOrAfter(end)){
+            message = `your event start date is after event end date`
+            return message
+        }
+        if (start.isBefore(today)) {
+            message = `event cannot be created before today`
+            return message
+        }
+        if (!end.isValid()) {
+            message = `your event end date is after event end date`
             return message
         }
         if (!events) {
             message = `internal server error`
             return message
         }
+
         try {
             switch (createBusinessEventDto.frequency) {
                 case '':
@@ -146,8 +158,7 @@ export class BusinessEventValidator {
                     if (unFilteredEvents) {
                         return message
                     }
-                    await twitterService.postTweet(createBusinessEventDto, image)
-                    return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
+                    return true
                 }
                 case 'daily': {
 
@@ -174,8 +185,7 @@ export class BusinessEventValidator {
                     if (unFilteredEvents) {
                         return message
                     }
-                    await twitterService.postTweet(createBusinessEventDto, image)
-                    return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, businessEventRepository, businessRepository)
+                    return true
                 }
             }
         } catch (error) {

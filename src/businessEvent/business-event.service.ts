@@ -23,16 +23,15 @@ export class BusinessEventService {
             const validationResponse = await BusinessEventValidator.dateValidation(
                 createBusinessEventDto,
                 this.businessEventRepository,
-                this.businessRepository,
-                this.twitterService,
-                image)
+                this.businessRepository)
             if (typeof validationResponse === 'string') {
                 throw new HttpException({
                     status: HttpStatus.BAD_REQUEST,
                     error: `bad request: ${validationResponse}`,
                 }, HttpStatus.BAD_REQUEST)
             }
-            return validationResponse
+            await this.twitterService.postTweet(createBusinessEventDto, image)
+            return await DataBaseHelper.createUniqueBusinessEvents(createBusinessEventDto, this.businessEventRepository, this.businessRepository)
         } catch (error) {
             throw new HttpException({
                 status: error.response.status,

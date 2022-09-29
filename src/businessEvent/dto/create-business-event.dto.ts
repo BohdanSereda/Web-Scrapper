@@ -11,28 +11,52 @@ import { FrequencyType } from './custom-types';
 export class CreateBusinessEventDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ type: String, description: 'event name'})
+  @ApiProperty({
+    example: 'party',
+    type: String,
+    description: 'business event name',
+  })
   readonly name: string;
 
   @IsString()
-  @ApiProperty({ type: String, description: 'event start time' })
+  @ApiProperty({
+    example: '13.09.2022:9:00',
+    type: String,
+    description: 'business event start',
+  })
   readonly event_start: string;
 
   @IsString()
-  @ApiProperty({ type: String, description: 'event end time' })
+  @ApiProperty({
+    example: '13.09.2022:14:00',
+    type: String,
+    description: 'business event end',
+  })
   readonly event_end: string;
 
   @IsString()
-  @ApiProperty({ type: String, description: 'event description' })
+  @ApiProperty({
+    example: 'very cool party',
+    type: String,
+    description: 'business event description',
+  })
   readonly description: string;
 
   @IsString()
-  @ApiProperty({ type: String, description: 'event features' })
+  @ApiProperty({
+    example: 'no alcohol',
+    type: String,
+    description: 'business event features',
+  })
   readonly features: string;
 
   @IsString()
   @IsIn(['daily', 'weekly', ''])
-  @ApiProperty({ type: 'FrequencyType', description: 'event frequency' })
+  @ApiProperty({
+    example: 'daily',
+    type: 'FrequencyType',
+    description: 'business event frequency',
+  })
   frequency: FrequencyType;
 
   @IsNumber()
@@ -41,6 +65,6 @@ export class CreateBusinessEventDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ type: String, description: 'event businessId' })
+  @ApiProperty({ example: 14, type: Number, description: 'business id' })
   readonly businessId: number;
 }

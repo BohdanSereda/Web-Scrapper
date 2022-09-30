@@ -24,7 +24,7 @@ export class TelegramBotValidator{
             const reservationDayIndex =  moment(ctx.session.date).day() - 1 
             const splittedTime = workingHours[reservationDayIndex].split(' ')
             const start = moment(splittedTime[1] + ' ' + splittedTime[2], 'hh:mm A')
-            let end
+            let end: moment.Moment 
             if(workingHours[reservationDayIndex].includes('Next day')){
                 end = moment(splittedTime[4] + ' ' +splittedTime[5].slice(0, 2), 'hh:mm A').add('days', 1);
             }else{

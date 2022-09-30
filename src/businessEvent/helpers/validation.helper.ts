@@ -4,7 +4,7 @@ import { DataBaseHelper } from 'src/helpers/db.helper';
 import { Business } from 'src/scraper/entities/business.entity';
 import { Repository } from 'typeorm';
 import { BusinessEvent } from '../entities/business-event.entity';
-import { TwitterService } from 'src/twitter/twitter.service';
+import { DateIntervalData } from '../dto/custom-types';
 
 export class BusinessEventValidator {
   static dayCoincidenceValidation(
@@ -42,7 +42,7 @@ export class BusinessEventValidator {
     );
   }
 
-  static dateIntervalValidation(data): string | false {
+  static dateIntervalValidation(data: DateIntervalData): string | false {
     let { event, normalized, context, coincided } = data;
     const {
       normalizedStart,

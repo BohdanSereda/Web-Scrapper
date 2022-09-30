@@ -1,14 +1,11 @@
-import { Ctx, Hears, InjectBot, Message, On, Start, Update } from 'nestjs-telegraf';
-import { Telegraf } from 'telegraf';
+import { Ctx, Hears, Message, On, Start, Update } from 'nestjs-telegraf';
 import { TelegramService } from './telegram.service';
 import { ActionButtons } from './helpers/telegram.buttons';
 import { Context } from './helpers/telegram.context';
-import { Message as TelegrafMessage } from 'telegraf/typings/core/types/typegram';
 
 @Update()
 export class TelegramUpdate {
   constructor(
-    @InjectBot() private readonly bot: Telegraf<Context>,  
     private readonly telegramService: TelegramService
     ) {}
 

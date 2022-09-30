@@ -2,8 +2,6 @@ import { ParseFilePipe, FileTypeValidator } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { ApiBodyOptions } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { fileFilter } from '../dto/custom-types';
 
 export const parseFile: ParseFilePipe = new ParseFilePipe({

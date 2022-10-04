@@ -1,22 +1,22 @@
-import {  IsEmail, IsNumber, IsString } from 'class-validator'
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
 export class EmailScrapingDataDto {
     @IsString()
-    from: string
+    from: string;
 
     @IsString()
-    subject: string
+    subject: string;
 
     @IsString()
-    city: string
+    city: string;
 
     @IsString()
     @IsEmail()
-    email: string
+    email: string;
 
     @IsString()
-    status: string
+    status: string;
 
     @IsNumber()
-    businessesCount: number
+    businessesCount: number;
 }

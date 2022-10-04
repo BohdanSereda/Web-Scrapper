@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Business } from './entities/business.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Business])],
-  controllers: [ScraperController],
-  providers: [ScraperService]
+    imports: [TypeOrmModule.forFeature([Business])],
+    controllers: [ScraperController],
+    providers: [ScraperService],
 })
 export class ScraperModule {}

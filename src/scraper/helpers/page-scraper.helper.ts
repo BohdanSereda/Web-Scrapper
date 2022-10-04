@@ -1,12 +1,12 @@
-import axios from "axios";
+import axios from 'axios';
 
 export class PageScraperHelper {
     scrapePage = async (url: string): Promise<string> => {
         try {
             let { data } = await axios.get(url);
-            return data
+            return data;
         } catch (error) {
-            console.error(error.message)
+            console.error(error.message);
         }
-    }
+    };
 }

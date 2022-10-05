@@ -1,7 +1,7 @@
-import { BusinessEvent } from "../entities/business-event.entity";
+import { BusinessEvent } from '../entities/business-event.entity';
 
-export type FrequencyType = 'daily'| 'weekly' | ''
-export const fileFilter = 'raw|png|jpg|jpeg|tiff|psd|bmp|gif'
+export type FrequencyType = 'daily' | 'weekly' | '';
+export const fileFilter = 'raw|png|jpg|jpeg|tiff|psd|bmp|gif';
 export type DateIntervalData = {
     event: BusinessEvent;
     normalized: {
@@ -12,4 +12,4 @@ export type DateIntervalData = {
     };
     context: FrequencyType;
     coincided?: boolean;
-}
+};

@@ -7,11 +7,11 @@ import { Business } from 'src/scraper/entities/business.entity';
 import { TwitterModule } from 'src/twitter/twitter.module';
 
 @Module({
-  imports: [
-    TwitterModule,
-    TypeOrmModule.forFeature([BusinessEvent, Business])
-  ],
-  controllers: [BusinessEventController],
-  providers: [BusinessEventService]
+    imports: [
+        TwitterModule,
+        TypeOrmModule.forFeature([BusinessEvent, Business]),
+    ],
+    controllers: [BusinessEventController],
+    providers: [BusinessEventService],
 })
 export class BusinessEventModule {}

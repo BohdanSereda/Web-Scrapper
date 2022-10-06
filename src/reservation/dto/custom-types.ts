@@ -1,1 +1,1 @@
-export type StatusType = 'pending'| 'confirmed' | 'declined' 
+export type StatusType = 'pending' | 'confirmed' | 'declined';
